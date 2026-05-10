@@ -1,0 +1,540 @@
+% =====================================================================
+%  Applied Machine Learning — Assignment Report
+%  University of Sussex, Spring 2026
+% ---------------------------------------------------------------------
+%  Compile with:
+%     pdflatex report
+%     bibtex   report
+%     pdflatex report
+%     pdflatex report
+%
+%  Or use latexmk (handles all of the above automatically):
+%     latexmk -pdf report.tex
+%
+%  This template uses natbib + BibTeX so it compiles on any TeX install
+%  (Overleaf, MiKTeX, MacTeX, TeX Live, Sussex lab machines).
+% ---------------------------------------------------------------------
+%  Word limit: 3000 (includes figure captions, excludes references)
+%  Suggested per-section budget is noted in a comment above each section.
+% =====================================================================
+
+\documentclass[11pt,a4paper]{article}
+
+% --- Encoding & fonts -------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% --- Page layout ------------------------------------------------------
+\usepackage[margin=2.5cm]{geometry}
+% microtype is loaded with safe options so it works with the default
+% Computer Modern font on minimal TeX installs.
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Maths ------------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+
+% --- Graphics, tables, captions --------------------------------------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,labelfont=bf}
+
+% --- Floats & placement ----------------------------------------------
+\usepackage{float}
+\usepackage{placeins}
+
+% --- Hyperlinks (load late) ------------------------------------------
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+% --- TikZ for placeholder figures ------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric}
+
+% --- Bibliography (natbib + BibTeX, universally supported) -----------
+\usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{plainnat} % Ships with natbib; works everywhere.
+% Other options: unsrtnat (in citation order), abbrvnat (abbreviated).
+
+% --- Custom commands -------------------------------------------------
+% Drafting helpers — REMOVE all \todo before submission.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO:} #1\textbf{]}}}
+% Placeholder image so the document compiles before you have figures.
+\newcommand{\placeholder}[3][8cm]{%
+  \begin{center}
+    \begin{tikzpicture}
+      \draw[dashed,gray!60,line width=0.6pt] (0,0) rectangle (#1,#2);
+      \node[align=center,gray!80,font=\small\itshape] at (#1/2,#2/2) {Placeholder: #3};
+    \end{tikzpicture}
+  \end{center}
+}
+% Once a real figure exists in figures/, replace \placeholder with:
+% \includegraphics[width=0.8\linewidth]{filename}
+
+% =====================================================================
+%  Title block
+% =====================================================================
+\title{%
+  Applied Machine Learning Assignment\\[0.4em]
+  \large Sentiment Analysis and Face Alignment%
+}
+\author{%
+  \todo{Your name}\\
+  \small Candidate number: \todo{xxxxxx}\\
+  \small University of Sussex --- G6061 Applied Machine Learning, Spring 2026%
+}
+\date{\todo{Submission date}}
+
+\begin{document}
+\maketitle
+
+% =====================================================================
+%  Optional short abstract.
+%  If you keep this, it counts toward your 3000-word limit.
+%  Many students drop it — the marking scheme doesn't require it.
+% =====================================================================
+% \begin{abstract}
+% \noindent \todo{Two-to-three sentence summary of both systems and headline results.}
+% \end{abstract}
+
+% =====================================================================
+%  Notes for the writer (delete before submission)
+% ---------------------------------------------------------------------
+%  Word budget: 3000 total, including figure captions, excluding refs.
+%  Suggested allocation:
+%    Task 1 Methods                ~600 words
+%    Task 1 Results & analysis     ~500 words
+%    Task 1 NLTK external eval     ~250 words
+%    Task 2 Methods                ~600 words
+%    Task 2 Results & analysis     ~500 words
+%    Task 2 Robustness analysis    ~250 words
+%    Total                         ~2700, with buffer for AI declaration
+%
+%  Run `texcount report.tex` to track word count as you write.
+% =====================================================================
+
+% #####################################################################
+\section{Task 1: Sentiment Analysis}
+% Marks: 15 (methods) + 15 (analysis) + 10 (NLTK) + 10 (test accuracy)
+% #####################################################################
+
+% ---------------------------------------------------------------------
+\subsection{Description of methods}
+% Marks: 15.  Suggested ~600 words.
+% Cover: pre-processing, features/representation, models, hyperparameters,
+% compute. Diagrams expected for (a) pre-processing/feature pipeline and
+% (b) model architecture.
+% ---------------------------------------------------------------------
+
+\subsubsection{Problem framing}
+
+The task is binary sentiment classification of movie reviews, complicated
+by an unknown amount of email-style spam evenly distributed across both
+labelled classes. \todo{State concretely: the label set the system outputs
+is \(\{0, 1, d\}\) where \(d=\) your dummy label.}
+
+\subsubsection{Pre-processing}
+
+\todo{Describe and justify each step: tokenisation, case normalisation,
+number normalisation, punctuation handling, stopword decisions
+(esp.\ negation words), and either stemming~\cite{porter} or
+lemmatisation. Cite NLTK~\cite{nltk}.}
+
+\begin{figure}[H]
+  \centering
+  \placeholder[14cm]{2.8cm}{Pre-processing flowchart: raw text \(\to\) tokens \(\to\) normalised tokens \(\to\) feature vector}
+  \caption{Pre-processing pipeline applied to all training, validation
+  and test documents. \todo{Replace placeholder with real flowchart and
+  rewrite this caption to describe the choices, e.g. ``Negation tokens
+  retained; lemmatisation preferred over stemming following the
+  trade-off discussed in Section~X.''}}
+  \label{fig:t1-preproc}
+\end{figure}
+
+\subsubsection{Features and representations}
+
+\todo{Describe the at-least-two representations you compared, e.g.\ TF--IDF
+versus averaged Word2Vec embeddings~\cite{mikolov2013word2vec,mikolov2013distributed}.
+Explain how each was computed and why.}
+
+The TF--IDF score for term \(t\) in document \(d\) is
+\begin{equation}
+  \mathrm{tfidf}(d,t) = \mathrm{tf}(d,t)\,\log\!\left(\frac{N}{\mathrm{df}(t)}\right),
+  \label{eq:tfidf}
+\end{equation}
+where \(N\) is the corpus size and \(\mathrm{df}(t)\) is the number of
+documents containing \(t\)~\cite{jurafsky2026}.
+
+\subsubsection{Spam handling}
+
+\todo{Describe your spam-filtering stage. The lectures support
+cosine-similarity-to-class-centroid filtering and word-list-based
+filtering; both are defensible. State the threshold and how you chose it.}
+
+The cosine similarity between two vectors \(\bm{a}\) and \(\bm{b}\) is
+\begin{equation}
+  \mathrm{sim}(\bm{a},\bm{b}) = \frac{\bm{a}\cdot\bm{b}}{\sqrt{(\bm{a}\cdot\bm{a})(\bm{b}\cdot\bm{b})}},
+  \label{eq:cosine}
+\end{equation}
+which we use to compare a candidate document against the centroids of
+the declared positive and negative training classes.
+
+\subsubsection{Sentiment models}
+
+\todo{Describe each model you tried: word-list baseline, Naive
+Bayes~\cite{jurafsky2026}, Logistic Regression, and (if used)
+RNN~\cite{jurafsky2026}. For each: ML task type, model family, loss
+function, hyperparameters and how chosen.}
+
+For a binary Logistic Regression classifier with weight vector
+\(\bm{w}\), the probability of the positive class is
+\begin{equation}
+  P(y{=}1\mid\bm{x}) = \sigma(\bm{w}^\top\bm{x}) = \frac{1}{1+\exp(-\bm{w}^\top\bm{x})},
+\end{equation}
+and parameters are obtained by minimising the cross-entropy loss.
+
+\begin{figure}[H]
+  \centering
+  \placeholder[14cm]{4cm}{Model pipeline: pre-processed text \(\to\) features \(\to\) spam filter \(\to\) sentiment classifier}
+  \caption{End-to-end sentiment system. \todo{Rewrite caption to describe
+  your final system at a high level.}}
+  \label{fig:t1-system}
+\end{figure}
+
+\subsubsection{Hyperparameters and compute}
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Hyperparameters and how chosen for each Task 1 approach.}
+  \label{tab:t1-hyperparams}
+  \begin{tabular}{lll}
+    \toprule
+    Approach & Hyperparameter & Chosen value (method) \\
+    \midrule
+    Word-list baseline & List size, margin \(\delta\) & \todo{} \\
+    TF--IDF + Naive Bayes & N-gram range, smoothing \(\alpha\) & \todo{} \\
+    TF--IDF + Logistic Regression & Regularisation \(C\) & \todo{} \\
+    Spam threshold & Cosine cut-off & \todo{(swept on validation)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\todo{One short paragraph on compute: hardware (Colab T4 / your laptop),
+training time per model, peak memory if relevant.}
+
+% ---------------------------------------------------------------------
+\subsection{Analysis of results}
+% Marks: 15.  Suggested ~500 words.
+% Quantitative (confusion matrix required) + qualitative (subjective
+% interpretation of language). Failure cases and bias.
+% ---------------------------------------------------------------------
+
+\subsubsection{Quantitative evaluation}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{4cm}{CM Approach 1}
+    \caption{\todo{Approach name}}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{4cm}{CM Approach 2}
+    \caption{\todo{Approach name}}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{4cm}{CM Approach 3}
+    \caption{\todo{Approach name}}
+  \end{subfigure}
+  \caption{Confusion matrices on the held-out validation set.
+  \todo{Write a sentence or two pointing the reader at the diagonal,
+  the spam row, and the most common confusion.}}
+  \label{fig:t1-confmats}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Validation-set performance across approaches.
+  Precision, recall and F1 are macro-averaged across the three classes.}
+  \label{tab:t1-results}
+  \begin{tabular}{lcccc}
+    \toprule
+    Approach & Accuracy & Precision & Recall & F1 \\
+    \midrule
+    Word-list baseline (no spam handling) & \todo{} & \todo{} & \todo{} & \todo{} \\
+    TF--IDF + NB (no spam handling)       & \todo{} & \todo{} & \todo{} & \todo{} \\
+    TF--IDF + LR + cosine spam filter     & \todo{} & \todo{} & \todo{} & \todo{} \\
+    \todo{Word2Vec + LR + cosine spam}    & \todo{} & \todo{} & \todo{} & \todo{} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\todo{Discuss the precision--recall trade-off on the spam threshold and
+include the curve.}
+
+\subsubsection{Qualitative evaluation and failure cases}
+
+\todo{Pick three to five interesting validation-set errors. For each,
+quote a short fragment and explain in one or two sentences \emph{why}
+the model failed. Look for: negations, sarcasm, mixed sentiment, genre
+vocabulary used descriptively, very short reviews, spam written in a
+movie-review style.}
+
+\subsubsection{Systematic bias}
+
+\todo{Identify and discuss systematic biases observed: e.g.\ length bias
+on the spam filter, vocabulary bias on the sentiment classifier, class
+imbalance effects after spam removal.}
+
+% ---------------------------------------------------------------------
+\subsection{Performance on the NLTK external dataset}
+% Marks: 10.  Suggested ~250 words.
+% ---------------------------------------------------------------------
+
+\todo{Report sentiment accuracy and (importantly) how often the spam
+detector fires on \texttt{nltk.corpus.movie\_reviews}, which contains no
+spam. Discuss generalisation: vocabulary drift, domain shift, label-noise
+differences.}
+
+% =====================================================================
+\FloatBarrier
+\section{Task 2: Face Alignment}
+% Marks: 15 (methods) + 15 (analysis) + 10 (robustness) + 10 (test acc)
+% =====================================================================
+
+% ---------------------------------------------------------------------
+\subsection{Description of methods}
+% Marks: 15.  Suggested ~600 words.
+% ---------------------------------------------------------------------
+
+\subsubsection{Problem framing}
+
+The task is to predict the \((x,y)\) coordinates of five facial landmarks
+(left eye, right eye, nose, left mouth corner, right mouth corner;
+indices 0--4) for each face image. The training data exhibit \todo{briefly
+describe the variability you observed: rotations, brightness changes,
+noise, etc.}
+
+\subsubsection{Pre-processing}
+
+\todo{Describe each step: resizing (and the matching transformation of
+the landmark coordinates), grayscale conversion, intensity scaling,
+optional histogram equalisation~\cite{jurafsky2026}.}
+
+\begin{figure}[H]
+  \centering
+  \placeholder[14cm]{2.8cm}{Pre-processing flowchart for images and matching landmark transforms}
+  \caption{Image pre-processing pipeline. Landmark coordinates are
+  transformed identically so they remain consistent with the resized
+  image geometry.}
+  \label{fig:t2-preproc}
+\end{figure}
+
+\subsubsection{Features and representations}
+
+\todo{Describe the representations you compared: raw / flattened pixels,
+HOG descriptors~\cite{lowe2004sift}, and CNN-learned features.}
+
+A brief reminder of HOG: the image region is broken into overlapping
+\(6\times6\) cells, each described by a histogram of gradient orientations
+binned over \(0\)--\(180^\circ\); blocks of \(3\times3\) cells are then
+concatenated and locally normalised, yielding good invariance to
+brightness changes and small rotations.
+
+\subsubsection{Approaches compared}
+
+\textbf{Baseline 0 --- mean face.}
+Predict the per-landmark mean of the training set for every test image.
+This is the zero-component PCA shape model.
+
+\textbf{Approach 1 --- HOG features + linear regression.}
+\todo{Describe.}
+
+\textbf{Approach 2 --- Cascaded regression with pose-indexed features
+\cite{cao2014esr,xiong2013sdm}.}
+\todo{Describe the iterative refinement: at each stage, recompute HOG
+patches at the current landmark estimates and regress the residual.}
+
+\textbf{Approach 3 --- CNN direct coordinate regression.}
+\todo{Describe the architecture (conv blocks, kernel size, pooling,
+fully-connected head). State that the loss is the squared Euclidean
+distance \(\|\bm{h}(\bm{x})-\bm{y}\|^2\), and the optimiser used.}
+
+\todo{Optionally: a fourth approach using heatmap regression and
+soft-argmax, with the hourglass-style architecture~\cite{newell2016hourglass}.}
+
+\begin{figure}[H]
+  \centering
+  \placeholder[14cm]{6cm}{CNN architecture diagram (input \(\to\) conv blocks \(\to\) FC \(\to\) 10 outputs)}
+  \caption{Architecture of the convolutional network used for direct
+  coordinate regression. \todo{Replace with your own diagram and state
+  layer dimensions in the caption or in a small inline table.}}
+  \label{fig:t2-cnn}
+\end{figure}
+
+\subsubsection{Data augmentation}
+
+\todo{Describe the augmentations applied during training: rotations,
+scales, translations, brightness/contrast changes, and horizontal flips
+\emph{with a corresponding swap of the left/right landmark indices}
+(eyes 0\(\leftrightarrow\)1; mouth corners 3\(\leftrightarrow\)4; nose
+unchanged).}
+
+\begin{figure}[H]
+  \centering
+  \placeholder[14cm]{4cm}{Augmentation pipeline flowchart}
+  \caption{Data augmentation pipeline applied online during CNN
+  training. The same geometric transform is applied to both the image
+  and the landmark coordinates, and on horizontal flips the left/right
+  landmark indices are swapped.}
+  \label{fig:t2-augment}
+\end{figure}
+
+\subsubsection{Hyperparameters and compute}
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Hyperparameters and how chosen for each Task 2 approach.}
+  \label{tab:t2-hyperparams}
+  \begin{tabular}{lll}
+    \toprule
+    Approach & Hyperparameter & Chosen value (method) \\
+    \midrule
+    HOG + linear regression  & Cell size, block size & \todo{} \\
+    Cascaded regression      & Number of stages \(K\) & \todo{} \\
+    CNN direct regression    & LR, batch size, epochs & \todo{} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\todo{One short paragraph: hardware (Colab T4), per-model training time.}
+
+% ---------------------------------------------------------------------
+\subsection{Analysis of results}
+% Marks: 15.  Suggested ~500 words.
+% Required: cumulative error distribution OR boxplots.
+% ---------------------------------------------------------------------
+
+The error metric is the per-landmark Euclidean distance, normalised by
+the inter-eye distance \(d_{\text{ie}} = \|\bm{p}_0 - \bm{p}_1\|\):
+\begin{equation}
+  \mathrm{NME}_i = \frac{\|\hat{\bm{p}}_i - \bm{p}_i\|}{d_{\text{ie}}},
+  \label{eq:nme}
+\end{equation}
+with the per-image error reported as the mean over the five landmarks.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \placeholder[7cm]{5cm}{CED curve: all approaches}
+    \caption{Cumulative error distribution.}
+    \label{fig:t2-ced}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \placeholder[7cm]{5cm}{Boxplot per approach}
+    \caption{Per-image NME boxplots.}
+    \label{fig:t2-box}
+  \end{subfigure}
+  \caption{Quantitative comparison on the held-out validation set.
+  \todo{Note that the mean face is included as the floor; comment on
+  which approach is uniformly better and where the curves cross.}}
+  \label{fig:t2-quant}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \placeholder[14cm]{4cm}{Per-landmark error bars across approaches}
+  \caption{Per-landmark mean NME for each approach. \todo{Comment on
+  which landmark is hardest and why --- e.g.\ the nose has less local
+  texture, or mouth corners shift with expression.}}
+  \label{fig:t2-perlandmark}
+\end{figure}
+
+\subsubsection{Qualitative examples}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{5cm}{Success 1}
+    \caption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{5cm}{Success 2}
+    \caption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{5cm}{Success 3}
+    \caption{}
+  \end{subfigure}\\[0.5em]
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{5cm}{Failure 1}
+    \caption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{5cm}{Failure 2}
+    \caption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \placeholder[5cm]{5cm}{Failure 3}
+    \caption{}
+  \end{subfigure}
+  \caption{Predicted (red) and ground-truth (green) landmarks on
+  representative successes (top) and failures (bottom). \todo{In the
+  caption, briefly describe what makes each failure hard.}}
+  \label{fig:t2-examples}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\subsection{Extended robustness analysis}
+% Marks: 10.  Suggested ~250 words.
+% ---------------------------------------------------------------------
+
+\todo{Describe the perturbations applied (e.g.\ Gaussian noise at
+\(\sigma\in\{0,5,10,20,40\}\) on a 0--255 scale; rotations of
+\(\{0,5,10,20,40\}^\circ\)) and which approach was tested.}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \placeholder[7cm]{5cm}{CED at increasing noise levels}
+    \caption{Robustness to additive Gaussian noise.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \placeholder[7cm]{5cm}{Augmented vs non-augmented training}
+    \caption{Effect of training-time augmentation.}
+  \end{subfigure}
+  \caption{Robustness analysis. \todo{Discuss why the chosen approach is
+  more robust to certain perturbations: HOG's invariance to brightness
+  and small rotations; convolutional translation equivariance;
+  augmentation teaching the network seen transformations.}}
+  \label{fig:t2-robust}
+\end{figure}
+
+% =====================================================================
+\section*{Generative AI declaration}
+% Required by the brief.
+% =====================================================================
+
+\todo{State concretely how generative AI was used (e.g.\ for ideation,
+debugging, or LaTeX formatting), which tool, and that you verified all
+output. Per the brief, generative AI was \emph{not} used to write this
+report or to analyse data end-to-end.}
+
+% =====================================================================
+%  References — excluded from the 3000-word count.
+% =====================================================================
+\bibliography{references}
+
+\end{document}
