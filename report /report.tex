@@ -139,16 +139,55 @@
 \subsubsection{Problem framing}
 
 The task is binary sentiment classification of movie reviews, complicated
-by an unknown amount of email-style spam evenly distributed across both
-labelled classes. \todo{State concretely: the label set the system outputs
-is \(\{0, 1, d\}\) where \(d=\) your dummy label.}
+by email-style spam (Enron-style business emails) evenly distributed
+across both labelled classes in the training and validation sets. The
+deployed system outputs a label in \(\{0, 1, d\}\) where \(d=-1\) denotes
+the dummy class assigned to documents the system identifies as spam.
+
+\subsubsection{Dataset and exploratory analysis}
+
+The supplied training set contains 11{,}503 documents (5{,}767 with
+\(\textrm{label}=1\) and 5{,}736 with \(\textrm{label}=0\); validation
+1{,}397 documents split 704/693). Both splits are therefore close to
+class-balanced before any spam handling. Exploratory analysis confirms
+that spam contamination is approximately even across the two declared
+classes: applying a conservative regex marker (presence of a
+\texttt{Subject:} header, the token \emph{enron}, or \emph{unsubscribe})
+flags \(25.7\%\) of declared-negative and \(26.0\%\) of declared-positive
+training documents, while a movie-vocabulary marker (\emph{film},
+\emph{movie}, \emph{director}, \emph{plot}) fires on \(22.8\%\) and
+\(21.0\%\) respectively. The token-length distribution is sharply
+bimodal: review-style documents have a median of \(21\) tokens, whereas
+a long tail extends to \(5{,}394\) tokens for the longest email. The
+raw vocabulary contains \(27{,}066\) lowercased a--z token types
+(\(581{,}684\) tokens in total), of which \(55.1\%\) appear at least
+twice and \(28.6\%\) at least five times --- motivating a minimum
+document-frequency cut-off in the BoW representations. A
+frequency-difference analysis (greatest \(\Delta\) between class rates;
+W02\_L04) recovers expected sentiment words (\emph{great},
+\emph{funny}, \emph{love}, \emph{bad}, \emph{boring}) alongside
+spam-vocabulary leakage (\emph{enron}, \emph{hou}, \emph{ect},
+\emph{com}, \emph{gas}) in both class word-lists, demonstrating directly
+why a naive word-list or BoW classifier trained on the corrupt corpus
+will learn a mixture of sentiment and review-vs-spam discrimination
+rather than sentiment alone.
 
 \subsubsection{Pre-processing}
 
-\todo{Describe and justify each step: tokenisation, case normalisation,
-number normalisation, punctuation handling, stopword decisions
-(esp.\ negation words), and either stemming~\cite{porter} or
-lemmatisation. Cite NLTK~\cite{nltk}.}
+The exploratory phase fixed two preprocessing choices made on the basis
+of observed data characteristics. First, tokens are obtained with a
+simple \texttt{[a-zA-Z']+} regex over a lowercased copy of the text,
+which discards punctuation and digits and matches NLTK's standard
+treatment of contractions (W02\_L03)~\cite{nltk}. Second, the default
+NLTK English stopword list contains the negation tokens \emph{not},
+\emph{no} and \emph{never}, all of which carry sentiment polarity for
+this task; the final pipeline therefore uses a \emph{reduced} stopword
+list that retains negations, as flagged in the lecture material and as
+a known tripwire in the assignment brief.
+\todo{Finalise and justify remaining choices once \texttt{02\_baseline}
+is implemented: digit handling (\(<\)NUM\(>\) placeholder vs.\ deletion),
+treatment of \texttt{!}\,/\,\texttt{?}, and the
+stemming~\cite{porter} versus lemmatisation comparison.}
 
 \begin{figure}[H]
   \centering
