@@ -1,0 +1,20 @@
+{
+  "split": "val (from 01_explore split_indices.npz)",
+  "n_val": 390,
+  "mean_nme": 0.12456915515423327,
+  "median_nme": 0.11172308259003003,
+  "per_landmark_mean_nme": [
+    0.0978220901393143,
+    0.09732774083308156,
+    0.1543761554072478,
+    0.1367666107902269,
+    0.13655317860129562
+  ],
+  "landmark_order": [
+    "left_eye",
+    "right_eye",
+    "nose",
+    "left_mouth",
+    "right_mouth"
+  ]
+}

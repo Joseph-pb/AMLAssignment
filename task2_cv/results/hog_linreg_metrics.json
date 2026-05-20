@@ -1,0 +1,89 @@
+{
+  "hog_params": {
+    "orientations": 9,
+    "pixels_per_cell": [
+      6,
+      6
+    ],
+    "cells_per_block": [
+      3,
+      3
+    ],
+    "block_norm": "L2-Hys",
+    "feature_vector": true
+  },
+  "preprocess_config": {
+    "out_size": [
+      64,
+      64
+    ],
+    "grayscale": true,
+    "hist_eq": false,
+    "normalise": true
+  },
+  "alpha_sweep": [
+    {
+      "alpha": 0.01,
+      "val_mean_nme": 0.08759982393002416
+    },
+    {
+      "alpha": 0.1,
+      "val_mean_nme": 0.07642102790800062
+    },
+    {
+      "alpha": 1.0,
+      "val_mean_nme": 0.06534343281761372
+    },
+    {
+      "alpha": 10.0,
+      "val_mean_nme": 0.05866656528343944
+    },
+    {
+      "alpha": 100.0,
+      "val_mean_nme": 0.05643628005942679
+    }
+  ],
+  "best_alpha": 100.0,
+  "linear_regression_val_mean_nme": 0.09074448888282644,
+  "ridge_vs_linear_winner": "Ridge",
+  "hog_ridge": {
+    "mean_nme": 0.05643628005942679,
+    "median_nme": 0.05032360855255161,
+    "per_landmark_mean_nme": [
+      0.04146420200168293,
+      0.04187043770056666,
+      0.06744456659697377,
+      0.0648902400352629,
+      0.06651195396264756
+    ]
+  },
+  "raw_ridge": {
+    "mean_nme": 0.0745475338464501,
+    "median_nme": 0.06714351036733357,
+    "per_landmark_mean_nme": [
+      0.053965098786219454,
+      0.053950633823949566,
+      0.1008281767355138,
+      0.08398974338249318,
+      0.08000401650407458
+    ]
+  },
+  "baseline_mean_face": {
+    "mean_nme": 0.12456915515423327,
+    "median_nme": 0.11172308259003003,
+    "per_landmark_mean_nme": [
+      0.0978220901393143,
+      0.09732774083308156,
+      0.1543761554072478,
+      0.1367666107902269,
+      0.13655317860129562
+    ]
+  },
+  "landmark_order": [
+    "left_eye",
+    "right_eye",
+    "nose",
+    "left_mouth",
+    "right_mouth"
+  ]
+}

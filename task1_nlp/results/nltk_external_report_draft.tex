@@ -1,0 +1,33 @@
+\subsection{External evaluation on the NLTK \texttt{movie\_reviews} corpus}
+
+To probe generalisation outside the supplied train/val split we evaluated the
+frozen pipeline on the NLTK \texttt{movie\_reviews} corpus of
+\citet{pang2004sentimental} (1000 positive, 1000 negative film reviews).
+All artefacts \textemdash{} the preprocessing function, the cosine spam filter
+($\tau = 0.1857$), the fitted TF-IDF vectoriser, and the best classifier
+(\texttt{mnb.joblib}) \textemdash{} were loaded as-is and applied with
+\texttt{transform}-only semantics; nothing was refit.
+
+The cosine filter flagged $50.5\%$ of NLTK documents as spam,
+far above the near-zero rate one would expect for a corpus that contains no
+email headers, subject lines or unsubscribe boilerplate. The diagnosis is
+that $\tau$ was selected on the training distribution where median document
+length is $13$ tokens, whereas NLTK reviews are
+$342$ tokens at the median; the longer feature
+vectors lift cosine similarity to either Enron centroid mechanically, so a
+single global prototype acts as a length detector under domain shift. We
+therefore report two complementary metrics: on the non-flagged slice
+($989$ of $2000$ documents) the best model attains
+accuracy $0.7290$, precision $0.9108$, recall $0.5437$ and
+F1 $0.6810$ against the binary ground truth, versus a validation accuracy
+of $0.7895$ in-distribution; treating every spam flag as an error
+yields a pessimistic 3-class accuracy of $0.3605$ on the full corpus.
+The drop on the non-flagged slice is consistent with the lecture predictions
+of W05\_L09 (vocabulary effects in TF-IDF: median per-document OOV fraction
+$0.146$, 95th percentile $0.227$,
+attenuating the MNB log-likelihood gap) and W03\_L05 (bag-of-words mishandles
+negation and contrastive structure, both prevalent in the long-form NLTK
+reviews and reflected in the named failure cases). The pipeline degrades
+gracefully under shift rather than collapsing, and the dominant deployable
+fix is a length-aware or domain-specific spam filter rather than the
+sentiment classifier itself.

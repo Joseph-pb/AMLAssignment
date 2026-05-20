@@ -1,0 +1,10 @@
+\begin{tabular}{llllrrr}
+\toprule
+Model & Features & Best hyperparams & ngram & Val acc & Val F1 & Train (s) \\
+\midrule
+MNB & TF-IDF & alpha: 0.5 & (1, 1) & 0.7895 & 0.8071 & 0.061 \\
+LR & TF-IDF & C: 1.0 & (1, 1) & 0.7774 & 0.7967 & 0.091 \\
+LR & avg Word2Vec & C: 0.01, w2v\_dim: 100 & nan & 0.6936 & 0.7246 & 1.204 \\
+Word-list & lexicon & K: 500, delta: 0 & (1,1) & 0.6707 & 0.6747 & 0.018 \\
+\bottomrule
+\end{tabular}

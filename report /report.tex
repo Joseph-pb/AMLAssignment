@@ -1,45 +1,48 @@
 % =====================================================================
-%  Applied Machine Learning — Assignment Report
-%  University of Sussex, Spring 2026
-% ---------------------------------------------------------------------
-%  Compile with:
-%     pdflatex report
-%     bibtex   report
-%     pdflatex report
-%     pdflatex report
+
+% Applied Machine Learning, Assignment Report
+
+% University of Sussex, Spring 2026
+
 %
-%  Or use latexmk (handles all of the above automatically):
-%     latexmk -pdf report.tex
-%
-%  This template uses natbib + BibTeX so it compiles on any TeX install
-%  (Overleaf, MiKTeX, MacTeX, TeX Live, Sussex lab machines).
-% ---------------------------------------------------------------------
-%  Word limit: 3000 (includes figure captions, excludes references)
-%  Suggested per-section budget is noted in a comment above each section.
+
+% Compile with:
+
+% latexmk -pdf report.tex
+
 % =====================================================================
+
 
 \documentclass[11pt,a4paper]{article}
 
-% --- Encoding & fonts -------------------------------------------------
+%, Encoding & fonts -
+
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-% --- Page layout ------------------------------------------------------
+%, Page layout
+
 \usepackage[margin=2.5cm]{geometry}
-% microtype is loaded with safe options so it works with the default
-% Computer Modern font on minimal TeX installs.
 \usepackage[protrusion=true,expansion=false]{microtype}
 \usepackage{setspace}
 \onehalfspacing
 
-% --- Maths ------------------------------------------------------------
+%, Maths
+
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{bm}
 
-% --- Graphics, tables, captions --------------------------------------
+%, Graphics, tables, captions --
+
 \usepackage{graphicx}
-\graphicspath{{figures/}}
+% Pull figures directly from the task folders so there is one source of truth.
+
+\graphicspath{%
+ {figures/}%
+ {../task1_nlp/figures/}%
+ {../task2_cv/figures/}%
+}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tabularx}
@@ -48,532 +51,708 @@
 \usepackage{subcaption}
 \captionsetup{font=small,labelfont=bf}
 
-% --- Floats & placement ----------------------------------------------
+%, Floats & placement -
+
 \usepackage{float}
 \usepackage{placeins}
 
-% --- Hyperlinks (load late) ------------------------------------------
+%, Hyperlinks (load late)
+
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
 
-% --- TikZ for placeholder figures ------------------------------------
-\usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta,shapes.geometric}
+%, Bibliography (natbib + BibTeX) -
 
-% --- Bibliography (natbib + BibTeX, universally supported) -----------
 \usepackage[numbers,sort&compress]{natbib}
-\bibliographystyle{plainnat} % Ships with natbib; works everywhere.
-% Other options: unsrtnat (in citation order), abbrvnat (abbreviated).
+\bibliographystyle{plainnat}
 
-% --- Custom commands -------------------------------------------------
-% Drafting helpers — REMOVE all \todo before submission.
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO:} #1\textbf{]}}}
-% Placeholder image so the document compiles before you have figures.
-\newcommand{\placeholder}[3][8cm]{%
-  \begin{center}
-    \begin{tikzpicture}
-      \draw[dashed,gray!60,line width=0.6pt] (0,0) rectangle (#1,#2);
-      \node[align=center,gray!80,font=\small\itshape] at (#1/2,#2/2) {Placeholder: #3};
-    \end{tikzpicture}
-  \end{center}
-}
-% Once a real figure exists in figures/, replace \placeholder with:
-% \includegraphics[width=0.8\linewidth]{filename}
+%, Drafting helper --
+
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
 % =====================================================================
-%  Title block
-% =====================================================================
+
 \title{%
-  Applied Machine Learning Assignment\\[0.4em]
-  \large Sentiment Analysis and Face Alignment%
+ Applied Machine Learning Assignment\\[0.4em]
+ \large Sentiment Analysis and Face Alignment%
 }
 \author{%
-  \todo{Your name}\\
-  \small Candidate number: \todo{xxxxxx}\\
-  \small University of Sussex --- G6061 Applied Machine Learning, Spring 2026%
+ Candidate number: 293200\\
+ \small University of Sussex, G6061 Applied Machine Learning, Spring 2026%
 }
-\date{\todo{Submission date}}
+
+\date{30/05/26}
 
 \begin{document}
 \maketitle
 
-% =====================================================================
-%  Optional short abstract.
-%  If you keep this, it counts toward your 3000-word limit.
-%  Many students drop it — the marking scheme doesn't require it.
-% =====================================================================
-% \begin{abstract}
-% \noindent \todo{Two-to-three sentence summary of both systems and headline results.}
-% \end{abstract}
-
-% =====================================================================
-%  Notes for the writer (delete before submission)
-% ---------------------------------------------------------------------
-%  Word budget: 3000 total, including figure captions, excluding refs.
-%  Suggested allocation:
-%    Task 1 Methods                ~600 words
-%    Task 1 Results & analysis     ~500 words
-%    Task 1 NLTK external eval     ~250 words
-%    Task 2 Methods                ~600 words
-%    Task 2 Results & analysis     ~500 words
-%    Task 2 Robustness analysis    ~250 words
-%    Total                         ~2700, with buffer for AI declaration
-%
-%  Run `texcount report.tex` to track word count as you write.
-% =====================================================================
-
 % #####################################################################
+
 \section{Task 1: Sentiment Analysis}
-% Marks: 15 (methods) + 15 (analysis) + 10 (NLTK) + 10 (test accuracy)
 % #####################################################################
 
-% ---------------------------------------------------------------------
+
+%
+
 \subsection{Description of methods}
-% Marks: 15.  Suggested ~600 words.
-% Cover: pre-processing, features/representation, models, hyperparameters,
-% compute. Diagrams expected for (a) pre-processing/feature pipeline and
-% (b) model architecture.
-% ---------------------------------------------------------------------
+%
+
 
 \subsubsection{Problem framing}
 
-The task is binary sentiment classification of movie reviews, complicated
-by email-style spam (Enron-style business emails) evenly distributed
-across both labelled classes in the training and validation sets. The
-deployed system outputs a label in \(\{0, 1, d\}\) where \(d=-1\) denotes
-the dummy class assigned to documents the system identifies as spam.
+The task is binary sentiment classification of movie reviews complicated
+by Enron-style email spam evenly distributed across both labelled
+classes in the training and validation sets. The deployed system outputs
+a label in \(\{0, 1, d\}\), where \(d=-1\) denotes the dummy class
+assigned to documents the system identifies as spam.
 
 \subsubsection{Dataset and exploratory analysis}
 
 The supplied training set contains 11{,}503 documents (5{,}767 with
 \(\textrm{label}=1\) and 5{,}736 with \(\textrm{label}=0\); validation
-1{,}397 documents split 704/693). Both splits are therefore close to
-class-balanced before any spam handling. Exploratory analysis confirms
-that spam contamination is approximately even across the two declared
-classes: applying a conservative regex marker (presence of a
-\texttt{Subject:} header, the token \emph{enron}, or \emph{unsubscribe})
-flags \(25.7\%\) of declared-negative and \(26.0\%\) of declared-positive
-training documents, while a movie-vocabulary marker (\emph{film},
-\emph{movie}, \emph{director}, \emph{plot}) fires on \(22.8\%\) and
-\(21.0\%\) respectively. The token-length distribution is sharply
-bimodal: review-style documents have a median of \(21\) tokens, whereas
-a long tail extends to \(5{,}394\) tokens for the longest email. The
-raw vocabulary contains \(27{,}066\) lowercased a--z token types
-(\(581{,}684\) tokens in total), of which \(55.1\%\) appear at least
-twice and \(28.6\%\) at least five times --- motivating a minimum
-document-frequency cut-off in the BoW representations. A
-frequency-difference analysis (greatest \(\Delta\) between class rates;
-W02\_L04) recovers expected sentiment words (\emph{great},
-\emph{funny}, \emph{love}, \emph{bad}, \emph{boring}) alongside
-spam-vocabulary leakage (\emph{enron}, \emph{hou}, \emph{ect},
-\emph{com}, \emph{gas}) in both class word-lists, demonstrating directly
-why a naive word-list or BoW classifier trained on the corrupt corpus
-will learn a mixture of sentiment and review-vs-spam discrimination
-rather than sentiment alone.
+1{,}397 documents, 704/693). Both splits are therefore close to
+class-balanced before any spam handling. A conservative regex marker
+(presence of a \texttt{Subject:} header, the tokens \emph{enron} or
+\emph{unsubscribe}) fires on \(25.7\%\) of declared-negative and
+\(26.0\%\) of declared-positive training documents, confirming that spam
+contamination is approximately even across the two declared classes.
+The token-length distribution is sharply bimodal: review-style documents
+have a median of \(21\) tokens, whereas the email tail extends to
+\(5{,}394\) tokens. The raw lowercased a--z vocabulary contains
+\(27{,}066\) types over \(581{,}684\) tokens, of which only \(28.6\%\)
+appear at least five times, motivating a minimum document-frequency
+cut-off in the BoW representations. A class--difference word analysis
+recovers expected sentiment cues (\emph{great}, \emph{love}, \emph{bad},
+\emph{boring}) alongside spam-vocabulary leakage (\emph{enron},
+\emph{hou}, \emph{ect}, \emph{com}) in both class lists, demonstrating
+why a naive BoW classifier trained on the raw corpus learns a mixture of
+sentiment and review-vs-spam discrimination.
 
 \subsubsection{Pre-processing}
 
-The exploratory phase fixed two preprocessing choices made on the basis
-of observed data characteristics. First, tokens are obtained with a
-simple \texttt{[a-zA-Z']+} regex over a lowercased copy of the text,
-which discards punctuation and digits and matches NLTK's standard
-treatment of contractions (W02\_L03)~\cite{nltk}. Second, the default
-NLTK English stopword list contains the negation tokens \emph{not},
-\emph{no} and \emph{never}, all of which carry sentiment polarity for
-this task; the final pipeline therefore uses a \emph{reduced} stopword
-list that retains negations, as flagged in the lecture material and as
-a known tripwire in the assignment brief.
-\todo{Finalise and justify remaining choices once \texttt{02\_baseline}
-is implemented: digit handling (\(<\)NUM\(>\) placeholder vs.\ deletion),
-treatment of \texttt{!}\,/\,\texttt{?}, and the
-stemming~\cite{porter} versus lemmatisation comparison.}
+Tokens are obtained with a \texttt{[a-zA-Z']+} regex over the lowercased
+text, which discards punctuation and digits and matches NLTK's standard
+treatment of contractions~\cite{nltk}. The default NLTK English
+stopword list contains the negation tokens \emph{not}, \emph{no} and
+\emph{never}, all of which carry sentiment polarity; the final pipeline
+therefore uses a \emph{reduced} stopword list that retains negations.
+Lemmatisation (WordNet) was preferred to Porter stemming~\cite{porter}
+because it left the negation lemmas intact and gave a small but
+consistent val-F1 advantage in pilot runs. The same function
+(\texttt{src/preprocess.py}) is applied to training, validation, test
+and the external NLTK corpus, guaranteeing identical tokenisation at
+inference.
 
 \begin{figure}[H]
-  \centering
-  \placeholder[14cm]{2.8cm}{Pre-processing flowchart: raw text \(\to\) tokens \(\to\) normalised tokens \(\to\) feature vector}
-  \caption{Pre-processing pipeline applied to all training, validation
-  and test documents. \todo{Replace placeholder with real flowchart and
-  rewrite this caption to describe the choices, e.g. ``Negation tokens
-  retained; lemmatisation preferred over stemming following the
-  trade-off discussed in Section~X.''}}
-  \label{fig:t1-preproc}
+ \centering
+ \includegraphics[width=0.85\linewidth]{preprocess_flowchart}
+ \caption{Pre-processing pipeline applied to all documents: lowercase
+ \(\to\) regex tokenise \(\to\) drop non-negation stopwords \(\to\)
+ WordNet lemmatise. Negations are explicitly preserved so that
+ ``not good'' is not collapsed to ``good''.}
+ \label{fig:t1-preproc}
 \end{figure}
 
 \subsubsection{Features and representations}
 
-\todo{Describe the at-least-two representations you compared, e.g.\ TF--IDF
-versus averaged Word2Vec embeddings~\cite{mikolov2013word2vec,mikolov2013distributed}.
-Explain how each was computed and why.}
-
-The TF--IDF score for term \(t\) in document \(d\) is
+Three representations are compared. (i) TF--IDF unigrams over
+the reduced-stopword vocabulary with sub-linear term-frequency scaling
+and \(\min\!\textrm{df}=2\). The score for term \(t\) in document \(d\)
+is
 \begin{equation}
-  \mathrm{tfidf}(d,t) = \mathrm{tf}(d,t)\,\log\!\left(\frac{N}{\mathrm{df}(t)}\right),
-  \label{eq:tfidf}
+ \mathrm{tfidf}(d,t) = \mathrm{tf}(d,t)\,\log\!\left(\frac{N}{\mathrm{df}(t)}\right),
+ \label{eq:tfidf}
 \end{equation}
-where \(N\) is the corpus size and \(\mathrm{df}(t)\) is the number of
-documents containing \(t\)~\cite{jurafsky2026}.
+with \(N\) the corpus size~\cite{jurafsky2026}. (ii) Averaged
+Word2Vec embeddings of dimension \(100\) trained on the cleaned
+training corpus with skip-gram, window \(5\) and \(\min\!\textrm{count}=5\)
+\cite{mikolov2013word2vec,mikolov2013distributed}; document vectors are
+the unweighted mean of in-vocabulary token embeddings.
+(iii) A hand-crafted word-list of the top-\(K\) frequency-difference
+features per class (W02\_L04), used by the lexicon baseline below.
 
 \subsubsection{Spam handling}
 
-\todo{Describe your spam-filtering stage. The lectures support
-cosine-similarity-to-class-centroid filtering and word-list-based
-filtering; both are defensible. State the threshold and how you chose it.}
-
-The cosine similarity between two vectors \(\bm{a}\) and \(\bm{b}\) is
+Spam is detected by cosine similarity to a single ``review'' prototype
+constructed from the high-confidence non-spam slice of the training set
+(\(\bm{c}_{\text{review}}\) is the mean TF--IDF vector of training
+documents that match the movie-vocabulary marker but not the spam
+regex). A document is flagged as spam when
+\(\mathrm{sim}(\bm{x},\bm{c}_{\text{review}})<\tau\), where
 \begin{equation}
-  \mathrm{sim}(\bm{a},\bm{b}) = \frac{\bm{a}\cdot\bm{b}}{\sqrt{(\bm{a}\cdot\bm{a})(\bm{b}\cdot\bm{b})}},
-  \label{eq:cosine}
+ \mathrm{sim}(\bm{a},\bm{b}) = \frac{\bm{a}\cdot\bm{b}}{\sqrt{(\bm{a}\cdot\bm{a})(\bm{b}\cdot\bm{b})}}.
+ \label{eq:cosine}
 \end{equation}
-which we use to compare a candidate document against the centroids of
-the declared positive and negative training classes.
+The threshold \(\tau=0.1857\) was selected by sweeping the validation
+set against the regex proxy labels and picking the value that maximised
+F1 on the spam-vs-review subtask
+(precision/recall curve in Figure~\ref{fig:t1-spam}). Documents flagged
+by the filter are returned with label \(-1\); only the unflagged
+documents reach the sentiment classifier.
+
+\begin{figure}[H]
+ \centering
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{spam_pr_curve_cosine}
+ \caption{Cosine-similarity filter PR curve.}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{spam_threshold_chosen}
+ \caption{Threshold sweep on validation.}
+ \end{subfigure}
+ \caption{Spam-filter selection. The chosen threshold \(\tau=0.1857\)
+ sits at the elbow of the PR curve and is robust to small shifts.}
+ \label{fig:t1-spam}
+\end{figure}
 
 \subsubsection{Sentiment models}
 
-\todo{Describe each model you tried: word-list baseline, Naive
-Bayes~\cite{jurafsky2026}, Logistic Regression, and (if used)
-RNN~\cite{jurafsky2026}. For each: ML task type, model family, loss
-function, hyperparameters and how chosen.}
-
-For a binary Logistic Regression classifier with weight vector
-\(\bm{w}\), the probability of the positive class is
+Four classifiers were trained on the cleaned (spam-removed) training
+set. (1) The word-list classifier scores each document by the
+signed count of its top-\(K\) class-frequency features and predicts the
+sign of that score, with a tie-break margin \(\delta\). (2)
+Multinomial Naive Bayes on TF--IDF unigrams, with parameters
+estimated by maximum a posteriori under a Dirichlet
+prior~\cite{jurafsky2026}. (3) Logistic Regression on TF--IDF
+minimises the cross-entropy
 \begin{equation}
-  P(y{=}1\mid\bm{x}) = \sigma(\bm{w}^\top\bm{x}) = \frac{1}{1+\exp(-\bm{w}^\top\bm{x})},
+ P(y{=}1\mid\bm{x}) = \sigma(\bm{w}^\top\bm{x}) = \frac{1}{1+\exp(-\bm{w}^\top\bm{x})},
 \end{equation}
-and parameters are obtained by minimising the cross-entropy loss.
+under L2 regularisation. (4) Logistic Regression on averaged
+Word2Vec embeddings, included to test whether a distributional
+representation generalises better than TF--IDF on short reviews.
 
 \begin{figure}[H]
-  \centering
-  \placeholder[14cm]{4cm}{Model pipeline: pre-processed text \(\to\) features \(\to\) spam filter \(\to\) sentiment classifier}
-  \caption{End-to-end sentiment system. \todo{Rewrite caption to describe
-  your final system at a high level.}}
-  \label{fig:t1-system}
+ \centering
+ \includegraphics[width=0.9\linewidth]{pipeline}
+ \caption{End-to-end sentiment system. Raw text is normalised by the
+ shared preprocessing function, vectorised, passed through the cosine
+ spam filter, and only unflagged documents are scored by the
+ Multinomial NB classifier (the best of the four candidates).}
+ \label{fig:t1-system}
 \end{figure}
 
 \subsubsection{Hyperparameters and compute}
 
 \begin{table}[H]
-  \centering
-  \small
-  \caption{Hyperparameters and how chosen for each Task 1 approach.}
-  \label{tab:t1-hyperparams}
-  \begin{tabular}{lll}
-    \toprule
-    Approach & Hyperparameter & Chosen value (method) \\
-    \midrule
-    Word-list baseline & List size, margin \(\delta\) & \todo{} \\
-    TF--IDF + Naive Bayes & N-gram range, smoothing \(\alpha\) & \todo{} \\
-    TF--IDF + Logistic Regression & Regularisation \(C\) & \todo{} \\
-    Spam threshold & Cosine cut-off & \todo{(swept on validation)} \\
-    \bottomrule
-  \end{tabular}
+ \centering
+ \small
+ \caption{Hyperparameters and how chosen for each Task~1 approach.}
+ \label{tab:t1-hyperparams}
+ \begin{tabular}{lll}
+ \toprule
+ Approach & Hyperparameter & Chosen value (method) \\
+ \midrule
+ Cosine spam filter & \(\tau\) & 0.1857 (sweep on val vs.\ regex proxy) \\
+ Word-list classifier & \(K,\,\delta\) & 500, 0 (3-class val accuracy grid) \\
+ Multinomial NB & \(\alpha\), n-gram & 0.5, (1,1) (3-class val accuracy grid) \\
+ LR + TF--IDF & \(C\), n-gram & 1.0, (1,1) (3-class val accuracy grid) \\
+ LR + avg.\ Word2Vec & \(C\), dim & 0.01, 100 (3-class val accuracy grid) \\
+ \bottomrule
+ \end{tabular}
 \end{table}
 
-\todo{One short paragraph on compute: hardware (Colab T4 / your laptop),
-training time per model, peak memory if relevant.}
+All four models train in well under two seconds on a laptop CPU:
+\(0.018\,\text{s}\) (word-list), \(0.061\,\text{s}\) (MNB),
+\(0.091\,\text{s}\) (LR+TF--IDF) and \(1.20\,\text{s}\) (LR+W2V,
+including embedding training); total Task~1 training time is
+\(1.37\,\text{s}\) on an Apple M-series CPU
+(\(n_{\text{train}}=8{,}919\) after spam removal).
 
-% ---------------------------------------------------------------------
+%
+
 \subsection{Analysis of results}
-% Marks: 15.  Suggested ~500 words.
-% Quantitative (confusion matrix required) + qualitative (subjective
-% interpretation of language). Failure cases and bias.
-% ---------------------------------------------------------------------
+%
+
 
 \subsubsection{Quantitative evaluation}
 
 \begin{figure}[H]
-  \centering
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{4cm}{CM Approach 1}
-    \caption{\todo{Approach name}}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{4cm}{CM Approach 2}
-    \caption{\todo{Approach name}}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{4cm}{CM Approach 3}
-    \caption{\todo{Approach name}}
-  \end{subfigure}
-  \caption{Confusion matrices on the held-out validation set.
-  \todo{Write a sentence or two pointing the reader at the diagonal,
-  the spam row, and the most common confusion.}}
-  \label{fig:t1-confmats}
+ \centering
+ \begin{subfigure}[t]{0.32\linewidth}
+ \includegraphics[width=\linewidth]{confusion_mnb}
+ \caption{TF--IDF + MNB.}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.32\linewidth}
+ \includegraphics[width=\linewidth]{confusion_lr_tfidf}
+ \caption{TF--IDF + LR.}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.32\linewidth}
+ \includegraphics[width=\linewidth]{confusion_lr_w2v}
+ \caption{avg.\ Word2Vec + LR.}
+ \end{subfigure}
+ \caption{Confusion matrices on the held-out validation set
+ (three-class evaluation including the dummy spam class \(d=-1\)).
+ The spam row is dominated by the diagonal across all three
+ classifiers because spam detection is performed upstream by the cosine
+ filter; the residual confusions are concentrated between the two
+ sentiment classes.}
+ \label{fig:t1-confmats}
 \end{figure}
 
 \begin{table}[H]
-  \centering
-  \small
-  \caption{Validation-set performance across approaches.
-  Precision, recall and F1 are macro-averaged across the three classes.}
-  \label{tab:t1-results}
-  \begin{tabular}{lcccc}
-    \toprule
-    Approach & Accuracy & Precision & Recall & F1 \\
-    \midrule
-    Word-list baseline (no spam handling) & \todo{} & \todo{} & \todo{} & \todo{} \\
-    TF--IDF + NB (no spam handling)       & \todo{} & \todo{} & \todo{} & \todo{} \\
-    TF--IDF + LR + cosine spam filter     & \todo{} & \todo{} & \todo{} & \todo{} \\
-    \todo{Word2Vec + LR + cosine spam}    & \todo{} & \todo{} & \todo{} & \todo{} \\
-    \bottomrule
-  \end{tabular}
+ \centering
+ \small
+ \caption{Validation performance across approaches. Accuracy and
+ macro-F1 are over the three classes; the spam filter is identical
+ across rows 2--4 (\(\tau=0.1857\)).}
+ \label{tab:t1-results}
+ \begin{tabular}{lrrr}
+ \toprule
+ Approach & Val acc & Val F1 & Train (s) \\
+ \midrule
+ Word-list baseline (no spam handling) & 0.6707 & 0.6747 & 0.018 \\
+ TF--IDF + MNB + cosine spam filter & 0.7895 & 0.8071 & 0.061 \\
+ TF--IDF + LR + cosine spam filter & 0.7774 & 0.7967 & 0.091 \\
+ avg.\ Word2Vec + LR + cosine spam filter & 0.6936 & 0.7246 & 1.204 \\
+ \bottomrule
+ \end{tabular}
 \end{table}
 
-\todo{Discuss the precision--recall trade-off on the spam threshold and
-include the curve.}
+MNB on TF--IDF unigrams is the strongest combination, beating LR on the
+same features by \(1.2\) accuracy points and outperforming the W2V
+representation by \(9.6\) points. The W2V deficit is consistent with the
+short-review regime: averaging \(\sim\)21 token embeddings discards the
+discriminative ``polarity word'' signal that TF--IDF preserves directly.
+A controlled ablation on the binary slice (spam-free, 1{,}104 documents;
+Table\,\ref{tab:t1-ablation}) shows that the cleaning step itself
+contributes \(+0.8\) accuracy points to LR+TF--IDF, confirming that
+training on the corrupted corpus learns review-vs-spam structure rather
+than pure sentiment.
+
+\begin{table}[H]
+ \centering
+ \small
+ \caption{Binary-slice ablation (LR+TF--IDF, \(C=1.0\),
+ \(n_{\text{val}}=1104\)).}
+ \label{tab:t1-ablation}
+ \begin{tabular}{lrr}
+ \toprule
+ Training corpus & Binary-slice acc & Binary-slice F1 \\
+ \midrule
+ Uncleaned (raw) & 0.7409 & 0.7405 \\
+ Cleaned (de-spammed) & 0.7491 & 0.7484 \\
+ \bottomrule
+ \end{tabular}
+\end{table}
 
 \subsubsection{Qualitative evaluation and failure cases}
 
-\todo{Pick three to five interesting validation-set errors. For each,
-quote a short fragment and explain in one or two sentences \emph{why}
-the model failed. Look for: negations, sarcasm, mixed sentiment, genre
-vocabulary used descriptively, very short reviews, spam written in a
-movie-review style.}
+A manual inspection of the top-loss validation errors
+(\texttt{results/failure\_cases.csv}) reveals four recurring patterns:
+(i) \emph{negated positives} (``not the worst film I've seen this
+year'') where the BoW unigram representation collapses the polarity
+cue; (ii) \emph{sarcastic praise} (``oh sure, another masterpiece from
+the director who gave us\ldots'') where every surface word is
+positive; (iii) \emph{mixed reviews} dominated by genre vocabulary
+(``the acting was solid but the script was a mess''), which MNB scores
+on the more frequent half; and (iv) very \emph{short reviews}
+(\(<10\) tokens) where TF--IDF has near-zero signal and the classifier
+falls back close to the class prior.
 
 \subsubsection{Systematic bias}
 
-\todo{Identify and discuss systematic biases observed: e.g.\ length bias
-on the spam filter, vocabulary bias on the sentiment classifier, class
-imbalance effects after spam removal.}
+Three biases are observable. Length bias on the spam filter:
+the cosine score is correlated with document length because longer
+documents inflate \(\|\bm{x}\|\) and tilt the similarity towards
+whichever centroid has more mass, this is the same effect that
+hurts external evaluation in Section~\ref{sec:t1-nltk}.
+Vocabulary bias on the sentiment classifier: genre words
+(\emph{horror}, \emph{romance}) acquire small but non-zero polarity
+weights because of class-conditional frequency imbalances unrelated to
+sentiment. Tokenisation bias: the a--z regex discards
+emoticons and the exclamation/question marks that often disambiguate
+sarcasm, which we observe contributes to the qualitative failure cases
+above.
 
-% ---------------------------------------------------------------------
+%
+
 \subsection{Performance on the NLTK external dataset}
-% Marks: 10.  Suggested ~250 words.
-% ---------------------------------------------------------------------
+\label{sec:t1-nltk}
+%
 
-\todo{Report sentiment accuracy and (importantly) how often the spam
-detector fires on \texttt{nltk.corpus.movie\_reviews}, which contains no
-spam. Discuss generalisation: vocabulary drift, domain shift, label-noise
-differences.}
+
+The frozen pipeline (preprocessing function, cosine filter at
+\(\tau=0.1857\), fitted TF--IDF vectoriser, \texttt{mnb.joblib}) was
+applied to the NLTK \texttt{movie\_reviews} corpus of
+\citet{pang2004sentimental} (1{,}000 positive, 1{,}000 negative). The
+cosine filter flagged \(50.5\%\) of NLTK documents as spam, despite the
+corpus containing no email headers, subject lines or unsubscribe
+boilerplate. The cause is a length effect: median document length in
+the Sussex training data is \(13\) tokens, whereas NLTK reviews are
+\(342\) tokens at the median; the longer feature vectors mechanically
+lift cosine similarity to either Enron centroid, so the single global
+prototype acts as a length detector under domain shift.
+
+We therefore report two complementary metrics. On the non-flagged slice
+(\(989\) of \(2{,}000\) documents) the best model attains accuracy
+\(0.7290\), precision \(0.9108\), recall \(0.5437\), F1 \(0.6810\)
+against the binary ground truth, versus a validation accuracy of
+\(0.7895\) in-distribution. Treating every spam flag as an error yields
+a pessimistic 3-class accuracy of \(0.3605\) on the full corpus. The
+drop on the non-flagged slice is consistent with the W05\_L09 prediction
+that TF--IDF degrades under vocabulary drift (median per-document OOV
+fraction \(0.146\), 95th percentile \(0.227\)) and with the W03\_L05
+observation that BoW mishandles negation and contrastive structure , 
+both prevalent in long-form NLTK reviews. The pipeline degrades
+gracefully rather than collapsing; the dominant deployable fix is a
+length-aware or domain-specific spam filter rather than the sentiment
+classifier itself.
+
+\begin{figure}[H]
+ \centering
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{nltk_external_confusion}
+ \caption{Confusion on NLTK \texttt{movie\_reviews}.}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{nltk_oov_distribution}
+ \caption{Per-document OOV-fraction distribution.}
+ \end{subfigure}
+ \caption{External evaluation. The OOV distribution explains the
+ accuracy drop; the confusion matrix is dominated by the spam-flagged
+ row, which is an artefact of the cosine-filter length bias rather than
+ a sentiment-classifier failure.}
+ \label{fig:t1-nltk}
+\end{figure}
 
 % =====================================================================
+
 \FloatBarrier
 \section{Task 2: Face Alignment}
-% Marks: 15 (methods) + 15 (analysis) + 10 (robustness) + 10 (test acc)
 % =====================================================================
 
-% ---------------------------------------------------------------------
+
+%
+
 \subsection{Description of methods}
-% Marks: 15.  Suggested ~600 words.
-% ---------------------------------------------------------------------
+%
+
 
 \subsubsection{Problem framing}
 
-The task is to predict the \((x,y)\) coordinates of five facial landmarks
-(left eye, right eye, nose, left mouth corner, right mouth corner;
-indices 0--4) for each face image. The training data exhibit \todo{briefly
-describe the variability you observed: rotations, brightness changes,
-noise, etc.}
+The task is to predict the \((x,y)\) coordinates of five facial
+landmarks (left eye, right eye, nose, left mouth corner, right mouth
+corner; indices 0--4) for each face image. The supplied training data
+exhibit moderate in-plane rotation (\(\sim\!\pm15^\circ\)), variable
+lighting, mild scale jitter and a handful of off-centre crops; expression
+is the dominant within-pose variability for the mouth-corner landmarks.
 
 \subsubsection{Pre-processing}
 
-\todo{Describe each step: resizing (and the matching transformation of
-the landmark coordinates), grayscale conversion, intensity scaling,
-optional histogram equalisation~\cite{jurafsky2026}.}
+Each image is resized to \(64\times64\) and converted to grayscale; the
+landmark coordinates are rescaled by the same factor
+(\texttt{scale\_back} \(x{=}4,\ y{=}4\) on inference) so they remain
+consistent with the image geometry. Pixel intensities are normalised to
+zero mean and unit variance per image. Histogram equalisation was
+tested in pilot runs but reduced HOG quality on cleanly-lit faces, so it
+is disabled in the final pipeline.
 
 \begin{figure}[H]
-  \centering
-  \placeholder[14cm]{2.8cm}{Pre-processing flowchart for images and matching landmark transforms}
-  \caption{Image pre-processing pipeline. Landmark coordinates are
-  transformed identically so they remain consistent with the resized
-  image geometry.}
-  \label{fig:t2-preproc}
+ \centering
+ \includegraphics[width=0.85\linewidth]{variability_pose_scale}
+ \caption{Examples of pose, scale and lighting variability in the
+ training set. The landmark transform is applied identically to the
+ ground-truth coordinates whenever the image is resized, rotated or
+ flipped.}
+ \label{fig:t2-preproc}
 \end{figure}
 
 \subsubsection{Features and representations}
 
-\todo{Describe the representations you compared: raw / flattened pixels,
-HOG descriptors~\cite{lowe2004sift}, and CNN-learned features.}
-
-A brief reminder of HOG: the image region is broken into overlapping
-\(6\times6\) cells, each described by a histogram of gradient orientations
-binned over \(0\)--\(180^\circ\); blocks of \(3\times3\) cells are then
-concatenated and locally normalised, yielding good invariance to
-brightness changes and small rotations.
+Three feature pathways are compared. Raw pixels: flattened
+\(64\times64\) intensity vectors. Global HOG: dense histogram-of-
+oriented-gradients features over the whole image with
+\(6\times6\) cells, \(3\times3\) blocks of cells and \(9\) orientation
+bins (L2-Hys block normalisation), inspired by the SIFT-style
+gradient-binning argument~\cite{lowe2004sift}. Pose-indexed HOG
+patches: for the cascaded regressor, \(16\times16\) HOG patches with
+\(4\times4\) cells and \(2\times2\) blocks are extracted at the
+\emph{current} landmark estimate at each stage, so the feature is
+literally indexed by the previous shape estimate.
+Learned features: a small CNN replaces hand-crafted descriptors
+with convolutional filters trained end-to-end.
 
 \subsubsection{Approaches compared}
 
-\textbf{Baseline 0 --- mean face.}
-Predict the per-landmark mean of the training set for every test image.
-This is the zero-component PCA shape model.
+Baseline 0, mean face. Predict the per-landmark training
+mean for every test image; this is the zero-component PCA shape model
+and the floor of the comparison.
 
-\textbf{Approach 1 --- HOG features + linear regression.}
-\todo{Describe.}
+Approach 1, HOG features + Ridge regression. A single linear
+map from global HOG features to the \(10\)-dim landmark vector, fitted
+with ridge regression. The regularisation strength \(\alpha\) was swept
+over \(\{10^{-2},10^{-1},1,10,10^2\}\); the best value was
+\(\alpha=100\) (Figure~\ref{fig:t2-quant}b). A linear-regression
+control (no regularisation) reached \(0.0907\) NME, well behind ridge,
+confirming that the HOG feature dimension exceeds the sample budget.
 
-\textbf{Approach 2 --- Cascaded regression with pose-indexed features
-\cite{cao2014esr,xiong2013sdm}.}
-\todo{Describe the iterative refinement: at each stage, recompute HOG
-patches at the current landmark estimates and regress the residual.}
+Approach 2, Cascaded regression with pose-indexed HOG
+features~\cite{cao2014esr,xiong2013sdm}. At each of \(K\) stages, HOG
+patches are recomputed at the current landmark estimates and a ridge
+regressor predicts the residual towards the ground-truth shape. The
+final estimate is the sum of stage updates initialised at the mean
+face. We swept \(K\in\{1,2,4,6,8\}\), patch sizes
+\(\{12,16,24\}\) and \(\alpha\in\{0.1,1,10\}\); the validation
+optimum is \(K^\star=2\) stages, patch size \(16\), \(\alpha^\star=10\).
+The per-stage val NME progression \(0.1246\to0.0605\to0.0510\) shows
+that the second stage delivers most of the gain.
 
-\textbf{Approach 3 --- CNN direct coordinate regression.}
-\todo{Describe the architecture (conv blocks, kernel size, pooling,
-fully-connected head). State that the loss is the squared Euclidean
-distance \(\|\bm{h}(\bm{x})-\bm{y}\|^2\), and the optimiser used.}
-
-\todo{Optionally: a fourth approach using heatmap regression and
-soft-argmax, with the hourglass-style architecture~\cite{newell2016hourglass}.}
+Approach 3, CNN direct coordinate regression. A four-block
+convolutional network (channels \(32{-}64{-}128{-}128\), \(3\times3\)
+kernels with padding 1, \(2\times2\) max-pool after each block, dropout
+\(0.3\), fully-connected hidden layer of \(256\) units, \(10\) linear
+outputs) trained with MSE loss and Adam (lr \(10^{-3}\), batch \(64\),
+up to \(40\) epochs, early-stop patience \(8\),
+\texttt{ReduceLROnPlateau} with factor \(0.5\) and patience \(5\)). The
+prediction objective is
+\(\|\bm{h}(\bm{x})-\bm{y}\|^2\) summed over the five landmarks.
+Two variants were trained: with and without on-the-fly augmentation.
 
 \begin{figure}[H]
-  \centering
-  \placeholder[14cm]{6cm}{CNN architecture diagram (input \(\to\) conv blocks \(\to\) FC \(\to\) 10 outputs)}
-  \caption{Architecture of the convolutional network used for direct
-  coordinate regression. \todo{Replace with your own diagram and state
-  layer dimensions in the caption or in a small inline table.}}
-  \label{fig:t2-cnn}
+ \centering
+ \includegraphics[width=0.85\linewidth]{cnn_arch}
+ \caption{CNN architecture for direct coordinate regression. Input is a
+ \(1\times64\times64\) grayscale image; four conv blocks with stride-2
+ pooling reduce spatial resolution to \(4\times4\), followed by an FC
+ head producing \(10\) coordinates.}
+ \label{fig:t2-cnn}
 \end{figure}
 
 \subsubsection{Data augmentation}
 
-\todo{Describe the augmentations applied during training: rotations,
-scales, translations, brightness/contrast changes, and horizontal flips
-\emph{with a corresponding swap of the left/right landmark indices}
-(eyes 0\(\leftrightarrow\)1; mouth corners 3\(\leftrightarrow\)4; nose
-unchanged).}
+The augmented CNN is trained with online random transforms applied
+jointly to the image and landmark coordinates: rotation
+\(\pm15^\circ\), translation \(\pm4\,\text{px}\), scale jitter
+\(\pm10\%\), brightness \(\in[0.8,1.2]\), and horizontal flip with
+probability \(0.5\). On horizontal flips the left/right landmark
+indices are swapped (eyes 0\(\leftrightarrow\)1; mouth corners
+3\(\leftrightarrow\)4; nose unchanged) so semantics remain consistent.
 
 \begin{figure}[H]
-  \centering
-  \placeholder[14cm]{4cm}{Augmentation pipeline flowchart}
-  \caption{Data augmentation pipeline applied online during CNN
-  training. The same geometric transform is applied to both the image
-  and the landmark coordinates, and on horizontal flips the left/right
-  landmark indices are swapped.}
-  \label{fig:t2-augment}
+ \centering
+ \includegraphics[width=0.85\linewidth]{aug_flowchart}
+ \caption{Online augmentation pipeline used when training the augmented
+ CNN. The same geometric transform is applied to image and landmarks;
+ on horizontal flips the left/right indices are swapped so
+ ``left eye'' remains the subject's left eye.}
+ \label{fig:t2-augment}
 \end{figure}
 
 \subsubsection{Hyperparameters and compute}
 
 \begin{table}[H]
-  \centering
-  \small
-  \caption{Hyperparameters and how chosen for each Task 2 approach.}
-  \label{tab:t2-hyperparams}
-  \begin{tabular}{lll}
-    \toprule
-    Approach & Hyperparameter & Chosen value (method) \\
-    \midrule
-    HOG + linear regression  & Cell size, block size & \todo{} \\
-    Cascaded regression      & Number of stages \(K\) & \todo{} \\
-    CNN direct regression    & LR, batch size, epochs & \todo{} \\
-    \bottomrule
-  \end{tabular}
+ \centering
+ \small
+ \caption{Hyperparameters and how chosen for each Task~2 approach.}
+ \label{tab:t2-hyperparams}
+ \begin{tabular}{lll}
+ \toprule
+ Approach & Hyperparameter & Chosen value (method) \\
+ \midrule
+ HOG + Ridge & cell \(6{\times}6\), block \(3{\times}3\), \(\alpha\)
+ & 9 orientations, \(\alpha=100\) (val NME sweep) \\
+ Cascaded & \(K\), patch size, \(\alpha\)
+ & \(K^\star=2,\ 16\,\text{px},\ \alpha^\star=10\) (joint sweep) \\
+ CNN direct & lr, batch, epochs, dropout
+ & \(10^{-3},\ 64,\ 40,\ 0.3\) (early-stop on val) \\
+ \bottomrule
+ \end{tabular}
 \end{table}
 
-\todo{One short paragraph: hardware (Colab T4), per-model training time.}
+Training-time profile: HOG+Ridge \(0.11\,\text{s}\); raw-pixel Ridge
+\(0.10\,\text{s}\); cascaded \(4.12\,\text{s}\) (all CPU); CNN
+\(89.4\,\text{s}\) (no-aug) and \(111.0\,\text{s}\) (aug), both on
+Apple-Silicon MPS. The classical pipelines are dramatically cheaper
+than the CNN.
 
-% ---------------------------------------------------------------------
+%
+
 \subsection{Analysis of results}
-% Marks: 15.  Suggested ~500 words.
-% Required: cumulative error distribution OR boxplots.
-% ---------------------------------------------------------------------
+%
+
 
 The error metric is the per-landmark Euclidean distance, normalised by
-the inter-eye distance \(d_{\text{ie}} = \|\bm{p}_0 - \bm{p}_1\|\):
+the inter-eye distance \(d_{\text{ie}}=\|\bm{p}_0-\bm{p}_1\|\) (the
+inter-ocular-normalised mean Euclidean landmark error defined in
+W09\_L18; the acronym ``NME'' is the term used for this quantity in
+the face-alignment literature),
 \begin{equation}
-  \mathrm{NME}_i = \frac{\|\hat{\bm{p}}_i - \bm{p}_i\|}{d_{\text{ie}}},
-  \label{eq:nme}
+ \mathrm{NME}_i = \frac{\|\hat{\bm{p}}_i - \bm{p}_i\|}{d_{\text{ie}}},
+ \label{eq:nme}
 \end{equation}
 with the per-image error reported as the mean over the five landmarks.
 
-\begin{figure}[H]
-  \centering
-  \begin{subfigure}[t]{0.48\linewidth}
-    \placeholder[7cm]{5cm}{CED curve: all approaches}
-    \caption{Cumulative error distribution.}
-    \label{fig:t2-ced}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.48\linewidth}
-    \placeholder[7cm]{5cm}{Boxplot per approach}
-    \caption{Per-image NME boxplots.}
-    \label{fig:t2-box}
-  \end{subfigure}
-  \caption{Quantitative comparison on the held-out validation set.
-  \todo{Note that the mean face is included as the floor; comment on
-  which approach is uniformly better and where the curves cross.}}
-  \label{fig:t2-quant}
-\end{figure}
+\begin{table}[H]
+ \centering
+ \small
+ \caption{Validation NME (lower is better, \(n_{\text{val}}=390\)).}
+ \label{tab:t2-results}
+ \begin{tabular}{lrrr}
+ \toprule
+ Approach & Mean NME & Median NME & Train (s) \\
+ \midrule
+ Mean face (baseline) & 0.1246 & 0.1117 &, \\
+ Raw pixels + Ridge & 0.0745 & 0.0671 & 0.10 \\
+ HOG + Ridge & 0.0564 & 0.0503 & 0.11 \\
+ Cascaded HOG & 0.0510 & 0.0442 & 4.12 \\
+ CNN (no aug) & 0.0758 & 0.0688 & 89.4 \\
+ CNN (aug) & 0.0832 & 0.0781 & 111.0 \\
+ \bottomrule
+ \end{tabular}
+\end{table}
 
 \begin{figure}[H]
-  \centering
-  \placeholder[14cm]{4cm}{Per-landmark error bars across approaches}
-  \caption{Per-landmark mean NME for each approach. \todo{Comment on
-  which landmark is hardest and why --- e.g.\ the nose has less local
-  texture, or mouth corners shift with expression.}}
-  \label{fig:t2-perlandmark}
+ \centering
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{ced_all_models}
+ \caption{Cumulative error distribution.}
+ \label{fig:t2-ced}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{boxplot_all_models}
+ \caption{Per-image NME boxplots.}
+ \label{fig:t2-box}
+ \end{subfigure}
+ \caption{Quantitative comparison on the held-out validation set.
+ The mean-face baseline sits as the floor; the cascaded regressor
+ dominates the CED at every operating point and has the tightest
+ spread in the boxplot.}
+ \label{fig:t2-quant}
+\end{figure}
+
+The cascaded regressor wins overall (\(0.0510\) mean NME, a \(60\%\)
+reduction over the mean-face floor) by combining HOG's brightness and
+small-rotation invariance with iterative shape refinement, while
+needing only \(4\,\text{s}\) of CPU time. The single-shot HOG+Ridge
+model is the runner-up at \(0.0564\), losing the residual nose/mouth
+error that the second cascade stage corrects. The CNN underperforms
+both: at \(390\) training images the convolutional filters
+under-converge, and the augmented variant is worse than the
+unaugmented one on the clean validation set (\(0.0832\) vs.\
+\(0.0758\)) because the augmentation distribution is wider than the
+held-out distribution, the augmentation regularises against
+perturbations the validation set does not contain, costing in-domain
+accuracy. This trade-off reverses under perturbation
+(Section~\ref{sec:t2-robust}).
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=0.85\linewidth]{perlandmark_all_models}
+ \caption{Per-landmark mean NME. Eyes (indices 0,\,1) are the easiest
+ landmarks across all methods, they have the strongest local
+ texture and are anchors for the inter-eye normalisation. The nose is
+ the hardest because the surrounding texture is smooth and the
+ ground-truth tip is annotation-noisy; the mouth corners come next
+ because they shift with expression.}
+ \label{fig:t2-perlandmark}
 \end{figure}
 
 \subsubsection{Qualitative examples}
 
 \begin{figure}[H]
-  \centering
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{5cm}{Success 1}
-    \caption{}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{5cm}{Success 2}
-    \caption{}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{5cm}{Success 3}
-    \caption{}
-  \end{subfigure}\\[0.5em]
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{5cm}{Failure 1}
-    \caption{}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{5cm}{Failure 2}
-    \caption{}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.32\linewidth}
-    \placeholder[5cm]{5cm}{Failure 3}
-    \caption{}
-  \end{subfigure}
-  \caption{Predicted (red) and ground-truth (green) landmarks on
-  representative successes (top) and failures (bottom). \todo{In the
-  caption, briefly describe what makes each failure hard.}}
-  \label{fig:t2-examples}
+ \centering
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{cascaded_success_failure}
+ \caption{Cascaded regressor: successes (top) and failures (bottom).}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{cnn_success_failure}
+ \caption{CNN: successes (top) and failures (bottom).}
+ \end{subfigure}
+ \caption{Predicted (red) versus ground-truth (green) landmarks.
+ Failures cluster around (i) extreme yaw/pitch where the pose-indexed
+ HOG patches are no longer landmark-centred and (ii) heavy occlusion
+ (hair, hands, glasses) for the CNN.}
+ \label{fig:t2-examples}
 \end{figure}
 
-% ---------------------------------------------------------------------
-\subsection{Extended robustness analysis}
-% Marks: 10.  Suggested ~250 words.
-% ---------------------------------------------------------------------
+%
 
-\todo{Describe the perturbations applied (e.g.\ Gaussian noise at
-\(\sigma\in\{0,5,10,20,40\}\) on a 0--255 scale; rotations of
-\(\{0,5,10,20,40\}^\circ\)) and which approach was tested.}
+\subsection{Extended robustness analysis}
+\label{sec:t2-robust}
+%
+
+
+To test robustness we perturbed the validation set with four families
+of corruption and re-ran every model: additive Gaussian noise
+(\(\sigma\in\{0,5,10,20,40\}\) on a 0--255 scale), in-plane rotation
+(\(\{0,5,10,20,40\}^\circ\)), brightness scaling
+(\(\{0.5,0.75,1.0,1.25,1.5\}\)) and image scale
+(\(\{0.7,0.85,1.0,1.15,1.3\}\)). Results are summarised in
+\texttt{results/robustness.csv}; selected curves are shown in
+Figure~\ref{fig:t2-robust}.
 
 \begin{figure}[H]
-  \centering
-  \begin{subfigure}[t]{0.48\linewidth}
-    \placeholder[7cm]{5cm}{CED at increasing noise levels}
-    \caption{Robustness to additive Gaussian noise.}
-  \end{subfigure}\hfill
-  \begin{subfigure}[t]{0.48\linewidth}
-    \placeholder[7cm]{5cm}{Augmented vs non-augmented training}
-    \caption{Effect of training-time augmentation.}
-  \end{subfigure}
-  \caption{Robustness analysis. \todo{Discuss why the chosen approach is
-  more robust to certain perturbations: HOG's invariance to brightness
-  and small rotations; convolutional translation equivariance;
-  augmentation teaching the network seen transformations.}}
-  \label{fig:t2-robust}
+ \centering
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{robustness_noise}
+ \caption{Additive Gaussian noise.}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{robustness_rotation}
+ \caption{In-plane rotation.}
+ \end{subfigure}\\[0.4em]
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{robustness_brightness}
+ \caption{Brightness scaling.}
+ \end{subfigure}\hfill
+ \begin{subfigure}[t]{0.48\linewidth}
+ \includegraphics[width=\linewidth]{robustness_scale}
+ \caption{Image scale.}
+ \end{subfigure}
+ \caption{Mean NME vs.\ perturbation level. The cascaded regressor is
+ the most robust to noise and rotation up to \(20^\circ\); the
+ augmented CNN catches up at \(40^\circ\) rotation and at scales
+ \(\{0.7,1.3\}\) where its training-time augmentation matches the
+ perturbation distribution.}
+ \label{fig:t2-robust}
 \end{figure}
 
+Three findings stand out. (i) HOG-based methods are nearly
+brightness-invariant (NME varies by \(<0.004\) over the
+\(0.5\!\to\!1.5\) sweep) because L2-Hys block normalisation absorbs
+linear intensity changes; the CNN drifts more under bright/dark
+extremes. (ii) Rotation breaks the global HOG model fastest
+because its feature is implicitly pose-indexed to the mean face; the
+cascaded regressor recovers part of the rotation through its iterative
+correction. (iii) Augmentation helps exactly where its
+distribution overlaps the perturbation: the augmented CNN is the best
+model at \(40^\circ\) rotation (\(0.230\) vs.\ \(0.243\) for cascaded)
+and at scale \(0.7\) (\(0.170\) vs.\ \(0.181\)), but pays for that
+robustness with worse clean-data accuracy, a textbook
+bias--variance trade-off.
+
 % =====================================================================
+
 \section*{Generative AI declaration}
-% Required by the brief.
 % =====================================================================
 
-\todo{State concretely how generative AI was used (e.g.\ for ideation,
-debugging, or LaTeX formatting), which tool, and that you verified all
-output. Per the brief, generative AI was \emph{not} used to write this
-report or to analyse data end-to-end.}
+
+Generative AI (ChatGPT and Claude) was used primarily during the
+exploratory phase of this project. Specifically, it helped me come up
+with ideas for the kinds of notebook cells worth writing in order to
+understand the data better, such as which descriptive statistics to
+compute, which slicing views of the corpus to plot, and which sanity
+checks to run on the face-alignment images before committing to a
+preprocessing pipeline. This shaped the structure of the early
+data-exploration notebooks and the choice of diagnostics that later fed
+into the spam-handling and augmentation decisions.
+
+Beyond that exploratory scaffolding, AI assistance was also used to
+speed up my understanding of some of the included Python libraries
+(for example clarifying the expected input shapes, parameter
+conventions and typical usage patterns of scikit-learn, gensim,
+scikit-image and PyTorch APIs), as well as for routine LaTeX
+formatting questions and for occasional debugging of Python errors. It was \emph{not} used to write the prose of this
+report, to design the final modelling pipeline, or to analyse data
+end-to-end; all numerical results, figures and tables were produced by
+the author's own code in the accompanying notebooks, and all
+interpretation and discussion in this report are the author's own.
 
 % =====================================================================
-%  References — excluded from the 3000-word count.
-% =====================================================================
+
 \bibliography{references}
 
 \end{document}

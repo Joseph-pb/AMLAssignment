@@ -1,0 +1,6 @@
+model,train_seconds,val_mean_nme
+hog_ridge,0.1100,0.0564
+raw_ridge,0.1032,0.0745
+cascaded,4.1199,0.0510
+cnn_noaug,89.37,40,0.0758,mps
+cnn_aug,111.04,40,0.0832,mps

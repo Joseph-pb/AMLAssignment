@@ -1,0 +1,94 @@
+case_type,fileid,true,pred,cosine_s,hypothesis,text
+"false_positive (true=0, pred=1)",neg/cv059_28723.txt,0,1,0.10780129691841103,"Negation flip: positive cue tokens (""great"", ""funny"", ""best"") appear inside the scope of a negation that bag-of-words MNB cannot represent, so the positive likelihood dominates anyway.","louie is a trumpeter swan with no voice . 
+in order to woo his lady love serina , louie makes friends with a young boy , sammy , who persuades teacher mrs . hammerbottom ( carol burnett ) to allow louie to attend class . 
+louie learns to read and write and returns to his flock , but is laughed at once again when no other swans can understand his message of love for serina . 
+to make matters worse , louie's father feels he's lost his honor because of the trumpet he stole for his son in this animated version of e . b . 
+white's "" trumpet of the swan . "" 
+as jane austen and henry james have become popular sources for adult filmmakers over the past decade or so , e . b . 
+white is being returned to for children's films . 
+the animated "" charlotte's web "" has become a minor classic since its release in 1973 and 1999 brought us a live action version of "" stuart little . "" 
+ "" trumpet of the swan , "" directed by richard rich ( 1999's animated "" the king and i , "" the "" swan princess "" series ) , is unlikely to be remembered along with those two . 
+ "" trumpet of the swan "" is receiving a regional theatrical release , but is sure to quickly appear on home video . 
+boston is one of the targetted cities because our hero louie becomes famous playing his trumpet in beantown . 
+he encounters a gypsy-like con man in the public gardens who pitches louie and his trumpet as an added attraction to boston's swan boats . 
+louie stays at the ritz carlton before giving a concert at the hatch shell along the banks of the charles river . 
+at this point , louie's earned enough money so that dad can pay for the trumpet and become musically capable enough to win over serina's father . 
+ "" trumpet of the swan "" features flat background art , some poor sound syncing and insipid , sugary songs . 
+this effort would be better suited to saturday morning television than the big screen , but may be ok for the real small set . 
+"
+"false_negative (true=1, pred=0)",pos/cv001_18431.txt,1,0,0.13711232018539693,Contrastive structure (negative critique followed by a positive turn); MNB averages over both halves and lands on the larger negative half because NLTK reviews dwell on critique.,"every now and then a movie comes along from a suspect studio , with every indication that it will be a stinker , and to everybody's surprise ( perhaps even the studio ) the film becomes a critical darling . 
+mtv films' _election , a high school comedy starring matthew broderick and reese witherspoon , is a current example . 
+did anybody know this film existed a week before it opened ? 
+the plot is deceptively simple . 
+george washington carver high school is having student elections . 
+tracy flick ( reese witherspoon ) is an over-achiever with her hand raised at nearly every question , way , way , high . 
+mr . "" m "" ( matthew broderick ) , sick of the megalomaniac student , encourages paul , a popular-but-slow jock to run . 
+and paul's nihilistic sister jumps in the race as well , for personal reasons . 
+the dark side of such sleeper success is that , because expectations were so low going in , the fact that this was quality stuff made the reviews even more enthusiastic than they have any right to be . 
+you can't help going in with the baggage of glowing reviews , which is in contrast to the negative baggage that the reviewers were likely to have . 
+_election , a good film , does not live up to its hype . 
+what makes _election_ so disappointing is that it contains significant plot details lifted directly from _rushmore_ , released a few months earlier . 
+the similarities are staggering : 
+tracy flick ( _election_ ) is the president of an extraordinary number of clubs , and is involved with the school play . 
+max fischer ( _rushmore_ ) is the president of an extraordinary number of clubs , and is involved with the school play . 
+the most significant tension of _election_ is the potential relationship between a teacher and his student . 
+the most significant tension of _rushmore_ is the potential relationship between a teacher and his student . 
+tracy flick is from a single parent home , which has contributed to her drive . 
+max fischer is from a single parent home , which has contributed to his drive . 
+the male bumbling adult in _election_ ( matthew broderick ) pursues an extramarital affair , gets caught , and his whole life is ruined . 
+he even gets a bee sting . 
+the male bumbling adult in _rushmore_ ( bill murray ) pursues an extramarital affair , gets caught , and his whole life is ruined . 
+he gets several bee stings . 
+and so on . 
+what happened ? 
+how is it that an individual screenplay ( _rushmore_ ) and a novel ( _election_ ) contain so many significant plot points , and yet both films were probably not even aware of each other , made from two different studios , from a genre ( the high school geeks revenge movie ) that hadn't been fully formed yet ? 
+even so , the strengths of _election_ rely upon its fantastic performances from broderick , witherspoon , and newcomer jessica campbell , as paul's anti-social sister , tammy . 
+broderick here is playing the mr . rooney role from _ferris bueller_ , and he seems to be having the most fun he's had since then . 
+witherspoon is a revelation . 
+it's early in the year , it's a comedy , and teenagers have little clout , but for my money , witherspoon deserves an oscar nomination . 
+and once campbell's character gets going , like in her fantastic speech in the gymnasium , then you're won over . 
+one thing that's been bothering me since i've seen it . 
+there is an extraordinary amount of sexuality in this film . 
+i suppose that , coming from mtv films , i should expect no less . . . 
+but the film starts off light and airy , like a sitcom . 
+as the screws tighten , and the tensions mount , alexander payne decides to add elements that , frankly , distract from the story . 
+it is bad enough that mr . m doesn't like tracy's determination to win at all costs , but did they have to throw in the student/teacher relationship ? 
+even so , there's no logical reason why mr . m has an affair when he does . 
+there's a lot to like in _election_ , but the plot similarities to _rushmore_ , and the tonal nosedive it takes as it gets explicitly sex-driven , mark this as a disappointment . 
+"
+"false_spam (true in {0,1}, pred=-1)",neg/cv000_29416.txt,0,-1,0.4635404733777388,"Cosine score crosses tau because the long-form review shares high-IDF vocabulary (proper names, dates, numeric markers) with the Enron centroids — a failure mode of a single global cosine-to-centroid filter on out-of-distribution text.","plot : two teen couples go to a church party , drink and then drive . 
+they get into an accident . 
+one of the guys dies , but his girlfriend continues to see him in her life , and has nightmares . 
+what's the deal ? 
+watch the movie and "" sorta "" find out . . . 
+critique : a mind-fuck movie for the teen generation that touches on a very cool idea , but presents it in a very bad package . 
+which is what makes this review an even harder one to write , since i generally applaud films which attempt to break the mold , mess with your head and such ( lost highway & memento ) , but there are good and bad ways of making all types of films , and these folks just didn't snag this one correctly . 
+they seem to have taken this pretty neat concept , but executed it terribly . 
+so what are the problems with the movie ? 
+well , its main problem is that it's simply too jumbled . 
+it starts off "" normal "" but then downshifts into this "" fantasy "" world in which you , as an audience member , have no idea what's going on . 
+there are dreams , there are characters coming back from the dead , there are others who look like the dead , there are strange apparitions , there are disappearances , there are a looooot of chase scenes , there are tons of weird things that happen , and most of it is simply not explained . 
+now i personally don't mind trying to unravel a film every now and then , but when all it does is give me the same clue over and over again , i get kind of fed up after a while , which is this film's biggest problem . 
+it's obviously got this big secret to hide , but it seems to want to hide it completely until its final five minutes . 
+and do they make things entertaining , thrilling or even engaging , in the meantime ? 
+not really . 
+the sad part is that the arrow and i both dig on flicks like this , so we actually figured most of it out by the half-way point , so all of the strangeness after that did start to make a little bit of sense , but it still didn't the make the film all that more entertaining . 
+i guess the bottom line with movies like this is that you should always make sure that the audience is "" into it "" even before they are given the secret password to enter your world of understanding . 
+i mean , showing melissa sagemiller running away from visions for about 20 minutes throughout the movie is just plain lazy ! ! 
+okay , we get it . . . there 
+are people chasing her and we don't know who they are . 
+do we really need to see it over and over again ? 
+how about giving us different scenes offering further insight into all of the strangeness going down in the movie ? 
+apparently , the studio took this film away from its director and chopped it up themselves , and it shows . 
+there might've been a pretty decent teen mind-fuck movie in here somewhere , but i guess "" the suits "" decided that turning it into a music video with little edge , would make more sense . 
+the actors are pretty good for the most part , although wes bentley just seemed to be playing the exact same character that he did in american beauty , only in a new neighborhood . 
+but my biggest kudos go out to sagemiller , who holds her own throughout the entire film , and actually has you feeling her character's unraveling . 
+overall , the film doesn't stick because it doesn't entertain , it's confusing , it rarely excites and it feels pretty redundant for most of its runtime , despite a pretty cool ending and explanation to all of the craziness that came before it . 
+oh , and by the way , this is not a horror or teen slasher flick . . . it's 
+just packaged to look that way because someone is apparently assuming that the genre is still hot with the kids . 
+it also wrapped production two years ago and has been sitting on the shelves ever since . 
+whatever . . . skip 
+it ! 
+where's joblo coming from ? 
+a nightmare of elm street 3 ( 7/10 ) - blair witch 2 ( 7/10 ) - the crow ( 9/10 ) - the crow : salvation ( 4/10 ) - lost highway ( 10/10 ) - memento ( 10/10 ) - the others ( 9/10 ) - stir of echoes ( 8/10 ) 
+"

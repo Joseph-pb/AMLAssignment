@@ -1,0 +1,5 @@
+model,train_seconds,n_train,ngram_range,best_hyperparams
+wordlist,0.01753379100409802,8919,"(1,1)","{""K"": 500, ""delta"": 0}"
+mnb,0.06145462499989662,8919,"(1, 1)","{""alpha"": 0.5}"
+lr_tfidf,0.09091962499951478,8919,"(1, 1)","{""C"": 1.0}"
+lr_w2v,1.2041750839998713,8919,n/a,"{""C"": 0.01, ""w2v_dim"": 100, ""window"": 5, ""min_count"": 5, ""sg"": 1}"

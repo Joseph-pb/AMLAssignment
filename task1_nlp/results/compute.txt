@@ -1,0 +1,5 @@
+Total Task 1 training time: 1.37 seconds. Hardware: <user fills in>.
+   wordlist: 0.0175 s   (n_train=8919)
+        mnb: 0.0615 s   (n_train=8919)
+   lr_tfidf: 0.0909 s   (n_train=8919)
+     lr_w2v: 1.2042 s   (n_train=8919)

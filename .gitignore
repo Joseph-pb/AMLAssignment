@@ -1,5 +1,10 @@
 # Data (assignment datasets — not redistributed)
 data/
+task2_cv/data/face_alignment_*.npz
+
+# Submission build (redundant with source files)
+submission_AML/
+submission_AML.zip
 
 # LaTeX build artefacts
 *.aux

@@ -1,0 +1,108 @@
+{
+  "K_star": 2,
+  "patch_size_star": 16,
+  "alpha_star": 10.0,
+  "hog_patch_kw": {
+    "orientations": 9,
+    "pixels_per_cell": [
+      4,
+      4
+    ],
+    "cells_per_block": [
+      2,
+      2
+    ],
+    "block_norm": "L2-Hys",
+    "feature_vector": true
+  },
+  "preprocess_config": {
+    "out_size": [
+      64,
+      64
+    ],
+    "grayscale": true,
+    "hist_eq": false,
+    "normalise": true
+  },
+  "K_sweep": [
+    {
+      "K": 1,
+      "val_mean_nme_64": 0.06536330256074994
+    },
+    {
+      "K": 2,
+      "val_mean_nme_64": 0.05712711428473681
+    },
+    {
+      "K": 4,
+      "val_mean_nme_64": 0.05839911086677374
+    },
+    {
+      "K": 6,
+      "val_mean_nme_64": 0.05981659033199408
+    },
+    {
+      "K": 8,
+      "val_mean_nme_64": 0.06100663230845865
+    }
+  ],
+  "patch_sweep": [
+    {
+      "patch_size": 12,
+      "val_mean_nme_64": 0.05760209009822549
+    },
+    {
+      "patch_size": 16,
+      "val_mean_nme_64": 0.05712711428473681
+    },
+    {
+      "patch_size": 24,
+      "val_mean_nme_64": 0.07264684685152512
+    }
+  ],
+  "alpha_sweep": [
+    {
+      "alpha": 0.1,
+      "val_mean_nme_64": 0.07145673206922608
+    },
+    {
+      "alpha": 1.0,
+      "val_mean_nme_64": 0.05712711428473681
+    },
+    {
+      "alpha": 10.0,
+      "val_mean_nme_64": 0.05101478711664645
+    }
+  ],
+  "per_stage_val_nme_64": [
+    0.12456915377822692,
+    0.06054572737478208,
+    0.05101478711664645
+  ],
+  "per_stage_train_nme_64": [
+    0.12486913887992676,
+    0.04551833081161423,
+    0.03060515188124159
+  ],
+  "mean_nme": 0.05101478724955265,
+  "median_nme": 0.044228872032703495,
+  "per_landmark_mean_nme": [
+    0.03897259563571016,
+    0.03877404318584587,
+    0.06769979301236136,
+    0.054296017955693845,
+    0.05533148645815201
+  ],
+  "landmark_order": [
+    "left_eye",
+    "right_eye",
+    "nose",
+    "left_mouth",
+    "right_mouth"
+  ],
+  "comparison_val_mean_nme": {
+    "mean_face": 0.12456915515423327,
+    "hog_ridge": 0.05643628005942679,
+    "cascaded": 0.05101478724955265
+  }
+}

@@ -1,0 +1,11 @@
+\begin{tabular}{lll}
+\toprule
+Approach & Hyperparameter & Chosen value (method) \\
+\midrule
+Cosine spam filter & $\tau$ & 0.1857 (swept on validation against regex proxy labels) \\
+Word-list classifier & $K$, $\delta$ & 500, 0 (grid search on 3-class val accuracy) \\
+Multinomial NB & $\alpha$, ngram & 0.5, (1, 1) (grid search on 3-class val accuracy) \\
+LR + TF-IDF & $C$, ngram & 1.0, (1, 1) (grid search on 3-class val accuracy) \\
+LR + avg Word2Vec & $C$, dim & 0.01, 100 (grid search on 3-class val accuracy) \\
+\bottomrule
+\end{tabular}

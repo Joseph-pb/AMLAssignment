@@ -1,0 +1,54 @@
+{
+  "model_config": {
+    "in_channels": 1,
+    "n_landmarks": 5,
+    "dropout": 0.3,
+    "conv_channels": [
+      32,
+      64,
+      128,
+      128
+    ],
+    "kernel_size": 3,
+    "padding": 1,
+    "pool": 2,
+    "fc_hidden": 256,
+    "input_hw": [
+      64,
+      64
+    ]
+  },
+  "preprocess_config": {
+    "out_size": [
+      64,
+      64
+    ],
+    "grayscale": true,
+    "hist_eq": false,
+    "normalise": true
+  },
+  "scale_back": {
+    "x": 4.0,
+    "y": 4.0
+  },
+  "training": {
+    "batch_size": 64,
+    "max_epochs": 40,
+    "early_stop_patience": 8,
+    "lr": 0.001,
+    "optim": "Adam",
+    "scheduler": "ReduceLROnPlateau(factor=0.5,patience=5)",
+    "loss": "MSELoss",
+    "seed": 42
+  },
+  "aug_config": {
+    "rotate_deg": 15.0,
+    "translate_px": 4.0,
+    "scale_pct": 0.1,
+    "brightness": [
+      0.8,
+      1.2
+    ],
+    "hflip_p": 0.5
+  }
+}
